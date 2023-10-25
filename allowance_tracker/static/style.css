@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+    background-color: #f5f5f5; /* Background color for the entire page */
+}
+
+h1 {
+    color: #007BFF; /* Text color for the page title */
+}
+
+/* Style the form for choosing chores */
+form {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #007BFF; /* Background color for the submit button */
+    color: white; /* Text color for the submit button */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3; /* Background color for the submit button on hover */
+}
+
+/* Style the chart canvas */
+canvas {
+    margin: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+}
+

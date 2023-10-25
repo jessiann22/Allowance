@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kids Allowance Tracker</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+      /* Style for button container */
+      .kid-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      /* Style for custom amount input and button */
+      .custom-amount-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5px;
+      }
+
+      /* Add some margin to the chart */
+      #allowanceChart {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Kids Allowance Tracker</h1>
+
+    <div>
+      <h2>Kids' Allowance</h2>
+      <form id="kid-form">
+        <label for="kid_name">Kid's Name:</label>
+        <input type="text" id="kid_name" required /><br />
+        <label for="allowance">Allowance:</label>
+        <input type="number" id="allowance" required /><br />
+        <button type="submit">Add Kid</button>
+      </form>
+    </div>
+
+    <div>
+      <h2>Kids' Allowance Chart</h2>
+      <canvas id="allowanceChart" width="400" height="200"></canvas>
+      <div id="kid-buttons-container"></div>
+    </div>
+
+    <script>
+      // JavaScript code for dynamically adding kids and updating the Chart.js chart
+      document.addEventListener("DOMContentLoaded", function () {
+        var kidsData = {}; // Store kids' allowance data
+
+        // Function to create and update the Chart.js chart
+        function createAndRenderChart(data) {
+          // Get the canvas element where the chart will be drawn
+          var ctx = document.getElementById("allowanceChart").getContext("2d");
+          if (window.myChart) {
+            window.myChart.destroy(); // Destroy the previous chart instance
+          }
+          window.myChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: Object.keys(data), // Kid names
+              datasets: [
+                {
+                  label: "Allowance",
+                  data: Object.values(data), // Allowance amounts
+                  backgroundColor: "rgba(75, 192, 192, 0.6)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+          });
+        }
+
+        // Function to add a kid to the chart
+        function addKidToChart(name, allowance) {
+          kidsData[name] = allowance; // Add the kid to the data
+          createAndRenderChart(kidsData); // Update the chart
+          addMoneyButtons(); // Add money buttons for all kids
+        }
+
+        // Function to handle form submission for adding a kid
+        var kidForm = document.getElementById("kid-form");
+        kidForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var kidName = document.getElementById("kid_name").value;
+          var allowance = parseFloat(
+            document.getElementById("allowance").value
+          );
+
+          addKidToChart(kidName, allowance); // Add kid to the chart
+          document.getElementById("kid_name").value = "";
+          document.getElementById("allowance").value = "";
+        });
+
+        // Function to add "Add Money" and "Remove Money" buttons for each kid
+        function addMoneyButtons() {
+          var kidButtonsContainer = document.getElementById(
+            "kid-buttons-container"
+          );
+          kidButtonsContainer.innerHTML = ""; // Clear the container
+
+          for (var kidName in kidsData) {
+            var kidButtonContainer = document.createElement("div");
+            kidButtonContainer.classList.add("kid-buttons");
+            var addButton = document.createElement("button");
+            addButton.innerText = `Add Money to ${kidName}`;
+            addButton.addEventListener("click", function () {
+              addMoneyToKid(kidName, 2);
+            });
+
+            var removeButton = document.createElement("button");
+            removeButton.innerText = `Remove Money from ${kidName}`;
+            removeButton.addEventListener("click", function () {
+              removeMoneyFromKid(kidName, 2);
+            });
+
+            var customAmountInput = document.createElement("input");
+            customAmountInput.placeholder = "Custom Amount";
+            customAmountInput.type = "number";
+
+            var customAmountButton = document.createElement("button");
+            customAmountButton.innerText = "Apply Custom Amount";
+            customAmountButton.addEventListener("click", function () {
+              var customAmount = parseFloat(customAmountInput.value);
+              addMoneyToKid(kidName, customAmount);
+            });
+
+            var buttonContainer = document.createElement("div");
+            buttonContainer.appendChild(addButton);
+            buttonContainer.appendChild(removeButton);
+
+            var customAmountContainer = document.createElement("div");
+            customAmountContainer.classList.add("custom-amount-container");
+            customAmountContainer.appendChild(customAmountInput);
+            customAmountContainer.appendChild(customAmountButton);
+
+            kidButtonContainer.appendChild(buttonContainer);
+            kidButtonContainer.appendChild(customAmountContainer);
+
+            // Create a separate container for each kid's buttons
+            kidButtonsContainer.appendChild(document.createTextNode(kidName));
+            kidButtonsContainer.appendChild(kidButtonContainer);
+          }
+        }
+
+        // Function to add money to a specific kid
+        function addMoneyToKid(kidName, amount) {
+          if (!kidsData[kidName]) return;
+          kidsData[kidName] += amount;
+          createAndRenderChart(kidsData); // Update the chart
+        }
+
+        // Function to remove money from a specific kid
+        function removeMoneyFromKid(kidName, amount) {
+          if (!kidsData[kidName]) return;
+          kidsData[kidName] -= amount;
+          createAndRenderChart(kidsData); // Update the chart
+        }
+      });
+    </script>
+  </body>
+</html>
